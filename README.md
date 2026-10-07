@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Equilibrium
 
-## Getting Started
+Equilibrium helps you turn a personal goal into a shared commitment. Set a measurable target, find someone working toward a similar goal, and keep each other moving with progress check-ins and messages.
 
-First, run the development server:
+## What you can do
+
+- Create goals with a category, target, unit, and optional deadline.
+- Browse and filter goals that are looking for an accountability partner.
+- Send and respond to partnership requests.
+- Record progress check-ins, follow streaks, and review your activity.
+- Message your partner and keep track of notifications.
+
+## Built with
+
+- Next.js 15 and React 19
+- TypeScript and Tailwind CSS 4
+- TanStack Query
+- SQLite via `better-sqlite3`
+- `iron-session` for cookie-based sessions
+
+## Run locally
+
+You'll need Node.js 20 or later and npm.
+
+```bash
+git clone https://github.com/cybershaykh/equilibrium.git
+cd equilibrium
+npm ci
+```
+
+Set a session secret in a local `.env.local` file. Generate a strong value with:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
+Then put the generated value in `.env.local`:
+
+```dotenv
+IRON_SESSION_SECRET=your-generated-value
+```
+
+Environment files are ignored by Git. The app currently has a built-in development fallback, but do not rely on it for a deployed environment.
+
+To load the sample users, goals, check-ins, and conversation, run the seed script before starting the app:
+
+```bash
+npm run seed
+```
+
+The seed script only populates an empty database; it skips seeding if users already exist. It creates these demo accounts, all with the password `password123`:
+
+| Email | Name |
+| --- | --- |
+| `demo@equilibrium.app` | Alex Morgan |
+| `sam@equilibrium.app` | Sam Rivera |
+| `priya@equilibrium.app` | Priya Nair |
+| `leo@equilibrium.app` | Leo Kim |
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). You can also create your own account in the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Useful commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the local development server |
+| `npm run lint` | Run ESLint |
+| `npm run build` | Create a production build |
+| `npm run start` | Serve a production build |
+| `npm run seed` | Add sample data to an empty local database |
 
-## Learn More
+## Data and deployment
 
-To learn more about Next.js, take a look at the following resources:
+The app creates its SQLite database at `data/equilibrium.db` when it first needs it. The database and its SQLite journal files are local runtime data and are intentionally excluded from Git. The seed script can recreate sample data.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Because the database is stored on the local filesystem, deploy this version only to a Node.js host with a writable, persistent disk. Ephemeral or serverless filesystems can lose data between instances or restarts. Configure a unique `IRON_SESSION_SECRET` in the deployment environment, and do not use the published demo accounts for real data.
